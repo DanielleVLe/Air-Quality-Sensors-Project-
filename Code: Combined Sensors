@@ -1,42 +1,28 @@
-// This #include statement was automatically added by the Particle IDE.
-//#include <Adafruit_SSD1306.h>
-
-// This #include statement was automatically added by the Particle IDE.
-//#include <Adafruit_GFX.h>
-
-// This #include statement was automatically added by the Particle IDE.
-#include <Adafruit_DHT.h>
-#include "Adafruit_GFX.h"
-#include "Adafruit_SSD1306.h"
+#include <Arduino.h> //Implementing Arduino 
+#include <Adafruit_DHT.h> //DHT22
+#include "Adafruit_SSD1306.h" //OLED Display
 
 #define ADDR_6713 0x15 // default I2C slave address
-
-#define DHTPIN 6
+#define DHTPIN 2 //Assign Pin to DHT22 
 #define DHTTYPE DHT22 // default the DHT pins 
-//#include "Adafruit_DHT/Adafruit_DHT.h"
-
 #define OLED_DC     D3 // use hardware SPI
 #define OLED_CS     D4
 #define OLED_RESET  D5
-//#define OLED_CLK    A3
-//#define OLED_MOSI   A5
-Adafruit_SSD1306 display(OLED_DC, OLED_RESET, OLED_CS);
-int data [4];
 
 #define NUMFLAKES 10
 #define XPOS 0
 #define YPOS 1
 #define DELTAY 2
-
 #define LOGO16_GLCD_HEIGHT 16 
 #define LOGO16_GLCD_WIDTH  16
 
+Adafruit_SSD1306 display(OLED_DC, OLED_RESET, OLED_CS);
+
+int data [4];
 int CO2ppmValue;
 int temperature;
 int humidity;
-
 DHT dht(DHTPIN, DHTTYPE);
-
 
 void setup() 
 {
@@ -44,8 +30,6 @@ void setup()
     Wire.begin ();
     display.clearDisplay();
     Serial.begin(9600);
-    Serial.println("Application Note AN161_ardunio_T6713_I2C");
-    
 }
 
 int readC02()
@@ -64,7 +48,6 @@ int readC02()
     CO2ppmValue = ((data[2] * 0xFF ) + data[3]);
 }
 
-
 void loop() {
     int co2Value = readC02(); 
     
@@ -75,17 +58,17 @@ void loop() {
     display.setTextColor(WHITE);
     
     //Display temperature  
-    display.setCursor(25, 10);
-    display.println("Temp: " + String(temperature) + "*C" );
+    display.setCursor(15, 8);
+    display.println("Temp: " + String(temperature) + "*C,");
     
     //Display humidity 
-    display.setCursor(25, 25);
+    display.setCursor(15, 20);
     display.println("Humidity: " + String(humidity) + "%");
   
     //Display c02 
-    display.setCursor(25, 40);
+    display.setCursor(15, 30);
     display.println("CO2: " + String(co2Value) + " ppm");
-
+       
     display.display();
    
     //Publish console 
@@ -97,9 +80,8 @@ void loop() {
     temperature = dht.getTempCelcius();
     humidity = dht.getHumidity();
 
-  
     Particle.publish("temp", String(temperature) + " °C");
     Particle.publish("humidity", String(humidity) + "%");
     delay(2000);
-
+  
 } 
